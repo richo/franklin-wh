@@ -27,6 +27,11 @@ impl Api {
         self.base.join("hes-gateway/terminal/chargePowerDetails")
             .unwrap() // We know this is a valid suffix
     }
+
+    pub fn iot_user_runtime_datalog(&self) -> Url {
+        self.base.join("hes-gateway/terminal/selectIotUserRuntimeDataLog")
+            .unwrap() // We know this is a valid suffix
+    }
 }
 
 pub struct Client {
@@ -55,6 +60,16 @@ impl Client {
 
         return response.inner().map(|x| x.batterySoc);
     }
+
+    pub async fn get_iot_user_runtime_datalog(&self) -> Result<(), ()> {
+        let response = self.get(&self.api.iot_user_runtime_datalog())
+            .await.map_err(|_| ())?
+            .json::<responses::IoTUserRuntimeDataLog>()
+            .await.map_err(|_| ())?;
+
+        return Ok(())
+    }
+
 
     /// Make a GET request with authentication etc handled for you.
     async fn get(&self, url: &Url) -> Result<reqwest::Response, reqwest::Error> {
