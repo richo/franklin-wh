@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use crate::errors;
 
 #[derive(Deserialize, Debug)]
 pub struct Container<T> {
@@ -10,11 +11,14 @@ pub struct Container<T> {
 }
 
 impl<T> Container<T> {
-    pub fn inner(self) -> Result<T, ()> {
+    pub fn inner(self) -> Result<T, errors::RequestError> {
         if self.code == 200 {
             return Ok(self.result);
         } else {
-            return Err(());
+            return Err(errors::RequestError::BadRequest {
+                code: self.code,
+                message: self.message,
+            });
         }
     }
 }

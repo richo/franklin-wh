@@ -1,6 +1,7 @@
 use reqwest::{self, Url};
 
 mod responses;
+mod errors;
 
 const DEFAULT_URL_BASE: &'static str  = "https://energy.franklinwh.com";
 
@@ -52,13 +53,13 @@ impl Client {
     }
 
     /// Return the current state of charge from 0 to 100
-    pub async fn get_state_of_charge(&self) -> Result<f32, ()> {
+    pub async fn get_state_of_charge(&self) -> Result<f32, errors::RequestError> {
         let response = self.get(&self.api.charge_power_details())
-            .await.map_err(|_| ())?
+            .await?
             .json::<responses::ChargePowerDetails>()
-            .await.map_err(|_| ())?;
+            .await?;
 
-        return response.inner().map(|x| x.batterySoc);
+        response.inner().map(|x| x.batterySoc)
     }
 
     pub async fn get_iot_user_runtime_datalog(&self) -> Result<(), ()> {
