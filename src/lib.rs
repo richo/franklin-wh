@@ -62,23 +62,29 @@ impl Client {
         response.inner().map(|x| x.batterySoc)
     }
 
-    pub async fn get_iot_user_runtime_datalog(&self) -> Result<(), ()> {
+    pub async fn get_iot_user_runtime_datalog(&self) -> Result<responses::IoTUserRuntimeDataLog, errors::RequestError> {
         let response = self.get(&self.api.iot_user_runtime_datalog())
-            .await.map_err(|_| ())?
-            .json::<responses::IoTUserRuntimeDataLog>()
-            .await.map_err(|_| ())?;
+            .await?;
 
-        return Ok(())
+        Ok(response.json::<responses::IoTUserRuntimeDataLog>()
+            .await?)
     }
 
 
     /// Make a GET request with authentication etc handled for you.
     async fn get(&self, url: &Url) -> Result<reqwest::Response, reqwest::Error> {
-        self.client
+        let res = self.client
             .get(url.clone())
-            .query(&[("gatewayId", &self.gateway)])
+            .query(&[("gatewayId", self.gateway.as_str()), ("lang", "en_US")])
             .header("loginToken", format!("APP_ACCOUNT:{}", self.token))
-            .send().await
+            .send().await?;
+
+        if res.status() != 200 {
+            // TODO(richo) Figure out how to deal with this more gracefully
+            panic!("FAILED: {:?}", res.text().await);
+        }
+
+        Ok(res)
     }
 }
 

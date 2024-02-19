@@ -40,13 +40,39 @@ pub type ChargePowerDetails = Container<InnerChargePowerDetails>;
 
 #[derive(Deserialize, Debug)]
 pub struct InnerIoTUserRuntimeDataLog {
-    id: i32,
+    id: String, // This sure is a i32 in a string.
     gatewayId: String,
     dataArea: DataAreaInner,
 
     createTime: String, // TODO(richo) native datetime : "2022-11-08 12:22:21",
     updateTime: String,
 
+}
+
+impl InnerIoTUserRuntimeDataLog {
+    pub fn state_of_charge(&self) -> f32 {
+        self.dataArea.soc
+    }
+
+    /// Returns the soc of each individual battery
+    pub fn detailed_state_of_charge<'a>(&'a self) -> &'a Vec<f32> {
+        &self.dataArea.fhpSoc
+    }
+
+    /// Positive means we're drawing, negative means we're charigng? I think?
+    ///
+    /// Measured in kW
+    pub fn current_battery_draw(&self) -> f32 {
+        self.dataArea.p_fhp
+    }
+
+    pub fn current_home_load(&self) -> f32 {
+        self.dataArea.p_load
+    }
+
+    pub fn current_solar_yield(&self) -> f32 {
+        self.dataArea.p_sun
+    }
 }
 
 pub type IoTUserRuntimeDataLog = Container<InnerIoTUserRuntimeDataLog>;
@@ -58,7 +84,7 @@ struct DataAreaInner {
       genChBat: i32,
       remoteSolar1Power: i32,
       di: [i32; 4],
-      soc: i32,
+      soc: f32,
       gridChBat: i32,
       r#do: [i32; 4],
       remoteSolarEn: i32,
@@ -84,7 +110,7 @@ struct DataAreaInner {
       kwh_uti_out: f32,
       kwh_load: f32,
       soChBat: i32,
-      fhpSoc: Vec<i32>,
+      fhpSoc: Vec<f32>,
       p_fhp: f32,
       sinLTemp: i32,
       fhpPower: Vec<f32>,
