@@ -33,6 +33,10 @@ impl Api {
         self.base.join("hes-gateway/terminal/selectIotUserRuntimeDataLog")
             .unwrap() // We know this is a valid suffix
     }
+
+    pub fn login(&self) -> Url {
+        unimplemented!()
+    }
 }
 
 pub struct Client {
@@ -50,6 +54,11 @@ impl Client {
             client: Default::default(),
             gateway: gateway.into(),
         }
+    }
+
+    pub fn login<'a>(username: &'a str, password: &'a str) -> Result<String, errors::RequestError> {
+        // TODO(richo) what do we do if someone wants to use a different API base
+
     }
 
     /// Return the current state of charge from 0 to 100

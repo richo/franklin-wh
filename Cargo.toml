@@ -13,3 +13,4 @@ serde = { version = "1.0.196", features = ["derive"] }
 thiserror = "1.0.57"
 [dev-dependencies]
 tokio = { version = "1.36.0", features = ["full"] }
+rpassword = "7.3.1"
