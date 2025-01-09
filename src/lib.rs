@@ -56,10 +56,10 @@ impl Client {
         }
     }
 
-    pub fn login<'a>(username: &'a str, password: &'a str) -> Result<String, errors::RequestError> {
-        // TODO(richo) what do we do if someone wants to use a different API base
+    // pub fn login<'a>(username: &'a str, password: &'a str) -> Result<String, errors::RequestError> {
+    //     // TODO(richo) what do we do if someone wants to use a different API base
 
-    }
+    // }
 
     /// Return the current state of charge from 0 to 100
     pub async fn get_state_of_charge(&self) -> Result<f32, errors::RequestError> {
